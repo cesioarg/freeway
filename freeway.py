@@ -70,7 +70,7 @@ class Freeway(object):
         assert isinstance(path, str), 'Path isnt str type'
         for pattern in patterns:
             if pattern == 'auto':
-                for key, rule in rules.items():
+                for key in rules:
                     for item in Freeway.expandRules(key, Freeway(rules=rules)):
                         match = re.match(item.regex, path, re.IGNORECASE)
                         if not match:
@@ -230,7 +230,7 @@ class RuleParser(object):
                     return field
                 index += 1
 
-        elif isinstance(item, basestring):
+        elif isinstance(item, str):
             for field in self.fields:
                 if field == item:
                     return index
@@ -243,7 +243,7 @@ class RuleParser(object):
         return str(self)
 
     def __contains__(self, item):
-        if isinstance(item, basestring):
+        if isinstance(item, str):
             for field in self.fields:
                 if field == item:
                     return True
