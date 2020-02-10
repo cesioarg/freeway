@@ -250,10 +250,7 @@ class RuleParser(object):
 
     @property
     def lenFields(self):
-        index = 0
-        for field in self.fields:
-            index += 1
-        return index
+        return len(list(self.fields))
 
     @property
     def fields(self):
