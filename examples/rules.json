@@ -1,0 +1,55 @@
+{   
+    "rules": 
+    {
+        "root": ["C:"],
+        "project": ["example"],
+        "projectPath": ["{root}/{project}"],
+        
+        "assetNspace": ["{assetType}_{asset}_{task}"], 
+        
+        "assetsPath": ["{projectPath}/assets/{assetType}"], 
+        "assetDir": ["{assetsPath}/{asset}"],
+        "assetFile": ["{project}_{assetType}_{asset}_{task}_v.{version}.{ext}"],
+        "assetPath": ["{assetDir}/{process}/{assetFile}"],
+
+        "assetWorkspaceDir": ["{assetDir}/{process}/"],
+        "assetWorkspaceFile": ["{project}_{assetPrefix}_{asset}_{task}.v{version}.{ext}"],
+        "assetWorkspacePath": ["{assetWorkspaceStage}/{assetWorkspaceFile}"],
+        
+        "sequencesPath": ["{projectPath}"],
+        "sequencePath": ["{sequencesPath}/{sequence}"],
+        "shotsPath": ["{sequencePath}"], 
+        "shotPath": ["{shotsPath}/{shot}"],
+        "shotWorkspace": ["{shotPath}/{process}"],
+        "shotStage": ["{shotWorkspace}/{stage}"], 
+
+        "shotWorkspaceFile": ["{shotStage}/{shotFile}"], 
+        "shotFile": ["{project}_{sequence}_{shot}_{task}.v{version}.{ext}"],
+        
+        "meshName": ["{side}_{assetPart}_meshShape"],
+        "nodeName": ["{side}_{assetPart}_{nodeType}"]
+    },
+    "convertionTable":
+    {
+        "assetTypeSwitch": 
+        {
+            "prefix": ["CH",         "PR",    "LC",        "LE"],
+            "type":   ["Character",  "Prop",  "Location",  "Element"],
+            "folder": ["char",       "prop",  "loc",       "elem"]
+        },
+        "assetSwitch":
+        {
+            "task":      ["art",    "mdl",      "shd",        "rig",    "grm",      "cth"],
+            "process":   ["01_art", "02_model", "03_shading", "04_rig", "05_groom", "06_cloth"],
+            "long":      ["art",    "model",    "shading",    "rig",    "groom",    "cloth"],
+            "short":     ["art",    "mdl",      "shd",        "rig",    "grm",      "cth"]
+        },
+        "shotSwitch":
+        {
+            "task":    ["lyt",    "anim",      "skfx",       "vfx",      "stdrs",         "vfx",         "lgtng",    "lgtng"],
+            "process": ["01-LYT", "02-ANIM",   "03-SKINFIX", "04-VFX",   "05-STDRESSING", "05-TIMEWRAP", "06-LGTNG", "07-COMPO"],
+            "long":    ["layout", "animation", "skinfix",    "vfx",      "simulation",    "vfx",         "lighting", "lighting"],
+            "short":   ["lyt",    "anm",       "skf",        "vfx",      "sim",           "vfx",         "lgtng",    "lgt"]
+        }
+    }    
+}
