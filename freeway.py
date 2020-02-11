@@ -33,9 +33,6 @@ else:
 class Freeway(object):
     def __init__(self, filepath=None, pattern=['auto'], rules=rules,
                  convertionTable=convertionTable, rulesfile=None, **kwargs):
-
-        
-
         if rulesfile:
             self._rulesfile = rulesfile
             jsonData = loadRulesFromFile(rulesfile)
@@ -139,8 +136,6 @@ class Freeway(object):
 
         for rule in rules._rules.get(attr, []):
             rule = RuleParser(attr, str(rule))
-            field = rule
-
             while set(rules._rules) & set(rule.fields):
                 for field in rule.fields:
                     if field in rules:
@@ -277,5 +272,6 @@ if __name__ == '__main__':
     ruta = r"C_Flower1_meshShape"
     myPath = Freeway(ruta, pattern=['meshName','instanceMeshName'])
     print(myPath)
-    myPath.clean()
-    print(myPath)
+    
+    for rule in Freeway.expandRules('assetsPath', myPath):
+        print (rule)

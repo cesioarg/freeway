@@ -1,17 +1,6 @@
 import os
 import re
-
-
-class NoValidVersion(Exception):
-    pass
-
-
-class VersionZero(Exception):
-    pass
-
-
-class NoVersionNumber(Exception):
-    pass
+from errors import (NoVersionNumber, NoValidVersion, VersionZero)
 
 
 class Versioner(object):
@@ -21,7 +10,6 @@ class Versioner(object):
         self.pads = pads
         extension = os.path.splitext(self.filename)[1]
         self.ext = extension[1:] if extension else ext
-
         self.regex_splits = re.compile('(?P<head>.*%s)(?P<version>[0-9]+)(?P<tail>[.].*)' % (self.postfix))
 
     def __str__(self):
@@ -105,21 +93,24 @@ class Versioner(object):
         elif version == 1:
             raise VersionZero
 
-    @property
-    def inFolder(self):
+    def __iter__(self):
         dirname, base = os.path.split(self._splits['head'])
         if os.path.isdir(dirname):
             for ver in sorted(os.listdir(dirname)):
                 if ver.startswith(base) and ver.endswith(self._splits['tail']):
-                    yield os.path.join(dirname, ver).replace('\\', '/')
-
+                    yield Versioner(os.path.join(dirname, ver))
+    
+    def __contains__(self, version):
+        if isinstance(version, str):
+            version = int(version)
+        return any(filter(lambda x: x == version, self))
     @property
     def last(self):
         old = 0
         last = None
-        for ver in self.inFolder:
+        for ver in self:
             try:
-                new = Versioner(ver).current
+                new = ver.current
                 if old <= new:
                     old = new
                     last = ver
@@ -128,16 +119,10 @@ class Versioner(object):
 
         return last
 
-    def existsVersion(self, version):
-        for ver in self.inFolder:
-            new = Versioner(ver).current
-            if version == new:
-                return new
-
     @property
     def allVersionsInt(self):
-        for ver in sorted(self.inFolder):
-            yield Versioner(ver).current
+        for ver in sorted(self):
+            yield ver.current
 
     @property
     def lastInt(self):
@@ -145,6 +130,15 @@ class Versioner(object):
 
 
 if __name__ == '__main__':
-    filename = r"Z:\AINBO\18_Sequences\SQ0495\SH0010\LYT\Publish\ABC\SQ0495_SH0010_RIG_Kart_Root_Group_LYT_v000.abc"
+    filename = r"examples\test_mod_v001.txt"
     ver = Versioner(filename)
+    print(ver.isVersionless)
+    print(ver.versionless)
+    print(ver.to_version(15))
+    print(ver.first)
+    print(ver.current)
+    print(ver.next)
     print(ver.last)
+    print(7 in ver)
+    print(ver.previous)
+    
