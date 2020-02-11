@@ -4,6 +4,7 @@ import os
 import re
 import json
 from collections import OrderedDict
+from versioner import Versioner
 
 
 _PLACEHOLDER_REGEX = re.compile('{(.+?)}')
@@ -194,8 +195,8 @@ class Freeway(object):
         return any(filter(lambda x: x == item, self._rules))
 
     def __getitem__(self, item):
-        for rule in self._rules:
-            if rule == item:
+        for key, rule in self._rules.items():
+            if key == item:
                 return rule
 
         raise KeyError(item)
@@ -210,6 +211,9 @@ class Freeway(object):
         notRemove = ['pattern', '_rules', '_convertionTable', '_rulesfile']
         for key in set(self.__dict__) ^ set(notRemove):
             self.__dict__.pop(key, None)
+    
+    def versioner(self, attr):
+        return Versioner(self.attr)
 
 
 class RuleParser(object):
