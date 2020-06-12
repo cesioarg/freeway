@@ -4,7 +4,7 @@ import os
 import re
 import json
 from collections import OrderedDict
-from versioner import Versioner
+from versioner import Version
 
 
 _PLACEHOLDER_REGEX = re.compile('{(.+?)}')
@@ -73,7 +73,8 @@ class Freeway(object):
                         match = re.match(item.regex, path, re.IGNORECASE)
                         if not match:
                             continue
-                        info = {key:value for key, value in match.groupdict().items() if not key.endswith('_')}
+                        info = {key: value for key, value in match.groupdict(
+                        ).items() if not key.endswith('_')}
                         info['pattern'] = pattern
                         return info
             else:
@@ -81,7 +82,8 @@ class Freeway(object):
                     match = re.match(item.regex, path, re.IGNORECASE)
 
                     if match:
-                        info = {pattern: value for pattern, value in match.groupdict().items() if not pattern.endswith('_')}
+                        info = {pattern: value for pattern, value in match.groupdict(
+                        ).items() if not pattern.endswith('_')}
                         return info
 
         return {}
@@ -122,7 +124,7 @@ class Freeway(object):
         for attr in ['pattern', '_filepath', '_rules',
                      '_convertionTable', '_rulesfile']:
             elements.pop(attr, None)
- 
+
         return elements
 
     @staticmethod
@@ -141,14 +143,15 @@ class Freeway(object):
                 for field in rule.fields:
                     if field in rules:
                         rule.rule = rule.rule.replace('{%s}' % field,
-                                                    rules.get(field, field))
+                                                      rules.get(field, field))
 
             yield rule
 
         rules._rules["_ignoreMissing"] = False
 
     def __getattribute__(self, attr):
-        ignoreMissing = object.__getattribute__(self, '_rules').get("_ignoreMissing")
+        ignoreMissing = object.__getattribute__(
+            self, '_rules').get("_ignoreMissing")
         rules = object.__getattribute__(self, '_rules').get(attr)
 
         if rules:
@@ -171,14 +174,16 @@ class Freeway(object):
             missing = [part for part in _PLACEHOLDER_REGEX.findall(name)]
 
             if missing and not ignoreMissing:
-                raise AttributeError('No se ha encontrado el atributo: %s' % ', '.join(missing))
+                raise AttributeError(
+                    'No se ha encontrado el atributo: %s' % ', '.join(missing))
 
             return name
         else:
             try:
                 return object.__getattribute__(self, attr)
             except Exception:
-                switchs = object.__getattribute__(self, '_convertionTable') or {}
+                switchs = object.__getattribute__(
+                    self, '_convertionTable') or {}
 
                 for table, switch in switchs.items():
                     if attr in switch:
@@ -211,9 +216,9 @@ class Freeway(object):
         notRemove = ['pattern', '_rules', '_convertionTable', '_rulesfile']
         for key in set(self.__dict__) ^ set(notRemove):
             self.__dict__.pop(key, None)
-    
-    def versioner(self, attr):
-        return Versioner(self.attr)
+
+    def version(self, attr):
+        return Version(self.attr)
 
 
 class RuleParser(object):
@@ -267,15 +272,16 @@ class RuleParser(object):
             else:
                 fieldReplace = field[1:-1] + '_'
 
-            regexRule = regexRule.replace(field, _FIELDREPLACE % fieldReplace, 1)
+            regexRule = regexRule.replace(
+                field, _FIELDREPLACE % fieldReplace, 1)
 
         return '' + regexRule
 
 
 if __name__ == '__main__':
     ruta = r"C_Flower1_meshShape"
-    myPath = Freeway(ruta, pattern=['meshName','instanceMeshName'])
+    myPath = Freeway(ruta, pattern=['meshName', 'instanceMeshName'])
     print(myPath)
-    
+
     for rule in Freeway.expandRules('assetsPath', myPath):
-        print (rule)
+        print(rule)
