@@ -1,4 +1,77 @@
-{   
+{   "variables":
+    {
+        "root": {
+            "doc": "Project root dir",
+            "entity": "value",
+            "type": "str"
+        },
+        "project": {
+            "doc": "Project Name",
+            "entity": "value",
+            "type": "string"
+        },
+        "assetType": {
+            "doc": "Asset type",
+            "entity": "value"
+        },
+        "asset": {
+            "doc": "Name space for the assets",
+            "entity": "value"
+        },
+        "task": {
+            "doc": "Name of tasks",
+            "entity": "value"
+        },
+        "version": {
+            "doc": "Version number",
+            "entity": "value",
+            "type": "int"
+        },
+        "ext": {
+            "doc": "Version number",
+            "entity": "value",
+            "options": {
+                "jpg": {
+                    "tag": "Image"
+                    },
+                "png": {
+                    "tag": "Image"
+                    },
+                "abc": {
+                    "tag": "Geometry Cache"
+                    }
+            }
+        },
+        "process": {
+            "doc": "None",
+            "entity": "value"
+        },
+        "sequence": {
+            "doc": "None",
+            "entity": "value"
+        },
+        "shot": {
+            "doc": "None",
+            "entity": "value"
+        },
+        "stage": {
+            "doc": "None",
+            "entity": "value"
+        },
+        "side": {
+            "doc": "None",
+            "entity": "value"
+        },
+        "assetPart": {
+            "doc": "None",
+            "entity": "value"
+        },
+        "nodeType": {
+            "doc": "None",
+            "entity": "value"
+        }
+
+    },
     "rules": 
     {
         "root": ["C:"],
@@ -9,7 +82,7 @@
         
         "assetsPath": ["{projectPath}/assets/{assetType}"], 
         "assetDir": ["{assetsPath}/{asset}"],
-        "assetFile": ["{project}_{assetType}_{asset}_{task}_v.{version}.{ext}"],
+        "assetFile": ["{project}_{assetType}_{asset}_{task}_v{version}.{ext}"],
         "assetPath": ["{assetDir}/{process}/{assetFile}"],
 
         "assetWorkspaceDir": ["{assetDir}/{process}/"],
@@ -33,23 +106,18 @@
     {
         "assetTypeSwitch": 
         {
-            "prefix": ["CH",         "PR",    "LC",        "LE"],
-            "type":   ["Character",  "Prop",  "Location",  "Element"],
-            "folder": ["char",       "prop",  "loc",       "elem"]
+            "short": ["CH", "PR", "LC", "LE"],
+            "long": ["Character", "Prop", "Location", "Element"]
         },
-        "assetSwitch":
+        "assetProcessSwitch":
         {
-            "task":      ["art",    "mdl",      "shd",        "rig",    "grm",      "cth"],
-            "process":   ["01_art", "02_model", "03_shading", "04_rig", "05_groom", "06_cloth"],
-            "long":      ["art",    "model",    "shading",    "rig",    "groom",    "cloth"],
-            "short":     ["art",    "mdl",      "shd",        "rig",    "grm",      "cth"]
+            "long": ["art", "model", "shading", "rig", "groom", "cloth"],
+            "short": ["art", "mdl", "shd", "rig", "grm", "cth"]
         },
-        "shotSwitch":
+        "shotProcessSwitch":
         {
-            "task":    ["lyt",    "anim",      "skfx",       "vfx",      "stdrs",         "vfx",         "lgtng",    "lgtng"],
-            "process": ["01-LYT", "02-ANIM",   "03-SKINFIX", "04-VFX",   "05-STDRESSING", "05-TIMEWRAP", "06-LGTNG", "07-COMPO"],
-            "long":    ["layout", "animation", "skinfix",    "vfx",      "simulation",    "vfx",         "lighting", "lighting"],
-            "short":   ["lyt",    "anm",       "skf",        "vfx",      "sim",           "vfx",         "lgtng",    "lgt"]
+            "long": ["layout", "animation", "skinfix", "vfx", "simulation", "vfx", "lighting", "lighting"],
+            "short": ["lyt", "anm", "skf", "vfx", "sim", "vfx", "lgtng", "lgt"]
         }
     }    
 }
