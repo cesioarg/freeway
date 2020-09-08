@@ -34,6 +34,7 @@ else:
 class Freeway(object):
     def __init__(self, filepath=None, pattern=['auto'], rules=rules,
                  convertionTable=convertionTable, rulesfile=None, **kwargs):
+        
         if rulesfile:
             self._rulesfile = rulesfile
             jsonData = loadRulesFromFile(rulesfile)
@@ -43,26 +44,19 @@ class Freeway(object):
             self._rules = OrderedDict(Freeway.get_rules(rules))
             self._convertionTable = convertionTable
 
+        for key, value in kwargs.items():
+            setattr(self, key, value)
+            
         if filepath:
             self._filepath = filepath.replace('\\', '/')
             self.pattern = pattern
-
-        for key, value in kwargs.items():
-            setattr(self, key, value)
-
+            
     def __str__(self):
         return '%s: %s' % (self.pattern, str(self.data))
 
     def __repr__(self):
         return str(self)
-
-    def parseFilepath(self, filepath, patterns=['auto']):
-        if filepath:
-            for key, value in Freeway.info_from_path(filepath,
-                                                     self._rules,
-                                                     self.pattern).items():
-                setattr(self, key, value)
-
+                
     @staticmethod
     def info_from_path(path, rules, patterns=['auto']):
         assert isinstance(path, str), 'Path isnt str type'
@@ -71,23 +65,19 @@ class Freeway(object):
                 for key in rules:
                     for item in Freeway.expandRules(key, Freeway(rules=rules)):
                         match = re.match(item.regex, path, re.IGNORECASE)
-                        if not match:
-                            continue
-                        info = {key: value for key, value in match.groupdict(
-                        ).items() if not key.endswith('_')}
-                        info['pattern'] = pattern
-                        return info
+                        if match:
+                            for data in Freeway.info_from_path(path,
+                                                               rules,
+                                                               [item.name]):
+                                yield data
             else:
                 for item in Freeway.expandRules(pattern, Freeway(rules=rules)):
                     match = re.match(item.regex, path, re.IGNORECASE)
-
                     if match:
                         info = {pattern: value for pattern, value in match.groupdict(
                         ).items() if not pattern.endswith('_')}
-                        return info
-
-        return {}
-
+                        yield info
+                    
     @property
     def match(self):
         patterns = {}
@@ -116,12 +106,17 @@ class Freeway(object):
     @pattern.setter
     def pattern(self, value):
         self._pattern = [value] if isinstance(value, str) else value
-        self.parseFilepath(self._filepath, self._pattern)
+        if self._filepath:
+            for find in Freeway.info_from_path(self._filepath,
+                                               self._rules,
+                                               self._pattern):
+                for key, value in find.items():
+                    setattr(self, key, value)
 
     @property
     def data(self):
         elements = self.__dict__.copy()
-        for attr in ['pattern', '_filepath', '_rules',
+        for attr in ['pattern', '_pattern', '_filepath', '_rules',
                      '_convertionTable', '_rulesfile']:
             elements.pop(attr, None)
 
@@ -279,9 +274,8 @@ class RuleParser(object):
 
 
 if __name__ == '__main__':
-    ruta = r"C_Flower1_meshShape"
-    myPath = Freeway(ruta, pattern=['meshName', 'instanceMeshName'])
+    # "assetFile": ["{project}_{assetType}_{asset}_{task}_v.{version}.{ext}"]
+    
+    ruta = r"example_Character_Ainbo_MOD_v001.ma"
+    myPath = Freeway(ruta, pattern="assetFile")
     print(myPath)
-
-    for rule in Freeway.expandRules('assetsPath', myPath):
-        print(rule)
