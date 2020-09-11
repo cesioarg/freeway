@@ -6,57 +6,55 @@ import json
 from collections import OrderedDict
 from versioner import Version
 
-
 _PLACEHOLDER_REGEX = re.compile('{(.+?)}')
 _FIELDPATTERN_REGEX = re.compile('({.+?})')
 _FIELDREPLACE = r'(?P<%s>[:a-zA-Z0-9_-]*)'
 
+global jsonData
+jsonData = None
+
 
 def loadRulesFromFile(filename):
+    global jsonData
+    
+    if jsonData:
+        # load jsonData from global, reduce disk usage
+        return jsonData
+    
     print("Loading JSON file:", filename)
-
+    
     with open(filename, 'r') as jsonf:
         jsonData = json.loads(jsonf.read())
         return jsonData
 
 
-rulesfile = os.environ.get('RULESFILE', None)
-
-if rulesfile and os.path.exists(rulesfile):
-    jsonData = loadRulesFromFile(rulesfile)
-    rules = jsonData['rules']
-    convertionTable = jsonData['convertionTable']
-else:
-    rules = {}
-    convertionTable = {}
-
-
 class Freeway(object):
-    def __init__(self, filepath=None, pattern=['auto'], rules=rules,
-                 convertionTable=convertionTable, rulesfile=None, **kwargs):
-        
-        if rulesfile:
-            self._rulesfile = rulesfile
-            jsonData = loadRulesFromFile(rulesfile)
-            self._rules = OrderedDict(Freeway.get_rules(jsonData['rules']))
-            self._convertionTable = jsonData['convertionTable']
-        else:
-            self._rules = OrderedDict(Freeway.get_rules(rules))
-            self._convertionTable = convertionTable
+    def __init__(self, filepath=None, pattern=['auto'], rules=None,
+                 convertionTable=None, rulesfile=None, **kwargs):
 
+        if not rulesfile:
+            # Load rules from enviroment
+            rulesfile = os.environ.get('RULESFILE', None)
+            assert rulesfile and os.path.exists(rulesfile), "No RULESFILE env variable was detected."
+        
+        self._rulesfile = rulesfile
+        jsonData = loadRulesFromFile(rulesfile)
+        self._rules = OrderedDict(Freeway.get_rules(jsonData['rules']))
+        self._convertionTable = jsonData['convertionTable']
+        
         for key, value in kwargs.items():
             setattr(self, key, value)
-            
+
         if filepath:
             self._filepath = filepath.replace('\\', '/')
             self.pattern = pattern
-            
+
     def __str__(self):
         return '%s: %s' % (self.pattern, str(self.data))
 
     def __repr__(self):
         return str(self)
-                
+
     @staticmethod
     def info_from_path(path, rules, patterns=['auto']):
         assert isinstance(path, str), 'Path isnt str type'
@@ -77,7 +75,7 @@ class Freeway(object):
                         info = {pattern: value for pattern, value in match.groupdict(
                         ).items() if not pattern.endswith('_')}
                         yield info
-                    
+
     @property
     def match(self):
         patterns = {}
