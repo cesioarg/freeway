@@ -1,20 +1,31 @@
-# Author: Leandro Inocencio aka Cesio (cesio.arg@gmail.com)
+"""
+.. module:: Freeway
+   :platform: Unix, Windows
+   :synopsis: Freeway is a module for managing file system structures with recursive pattern rules.
+
+.. moduleauthor:: Leandro Inocencio <cesio.arg@gmail.com>
+
+"""
 
 import os
 import re
 import json
 from collections import OrderedDict
-from versioner import Version
+from .versioner import Version
 
 _PLACEHOLDER_REGEX = re.compile('{(.+?)}')
 _FIELDPATTERN_REGEX = re.compile('({.+?})')
 _FIELDREPLACE = r'(?P<%s>[:a-zA-Z0-9_-]*)'
 
+# Cached rules, avoid reading the disc a lot
 global jsonData
 jsonData = None
 
 
 def loadRulesFromFile(filename):
+    """
+    Load pattern rules that structure the pipeline.
+    """
     global jsonData
     
     if jsonData:
@@ -29,19 +40,24 @@ def loadRulesFromFile(filename):
 
 
 class Freeway(object):
+    """
+    Freeway main class
+    """
+    
     def __init__(self, filepath=None, pattern=['auto'], rules=None,
                  convertionTable=None, rulesfile=None, **kwargs):
 
         if not rulesfile:
             # Load rules from enviroment
             rulesfile = os.environ.get('RULESFILE', None)
-            assert rulesfile and os.path.exists(rulesfile), "No RULESFILE env variable was detected."
-        
+            assert rulesfile and os.path.exists(rulesfile), \
+                "No RULESFILE env variable was detected."
+
         self._rulesfile = rulesfile
         jsonData = loadRulesFromFile(rulesfile)
         self._rules = OrderedDict(Freeway.get_rules(jsonData['rules']))
         self._convertionTable = jsonData['convertionTable']
-        
+
         for key, value in kwargs.items():
             setattr(self, key, value)
 
@@ -57,6 +73,9 @@ class Freeway(object):
 
     @staticmethod
     def info_from_path(path, rules, patterns=['auto']):
+        """
+        Parse a path with pattern rules.
+        """
         assert isinstance(path, str), 'Path isnt str type'
         for pattern in patterns:
             if pattern == 'auto':
@@ -78,10 +97,13 @@ class Freeway(object):
 
     @property
     def match(self):
+        """
+        Check if it can build a complete path
+        """
         patterns = {}
         fullMatch = False
         for pattern in self.pattern:
-            for rule in Freeway.expandRules(pattern, Freeway(rules=rules)):
+            for rule in Freeway.expandRules(pattern, Freeway(rules=self._rules)):
                 for field in rule.fields:
                     if self.data.get(field):
                         patterns[pattern] = True
@@ -99,10 +121,16 @@ class Freeway(object):
 
     @property
     def pattern(self):
+        """
+        Current pattern in use.
+        """
         return self._pattern
 
     @pattern.setter
     def pattern(self, value):
+        """
+        Setting a pattern and parse new fields.
+        """
         self._pattern = [value] if isinstance(value, str) else value
         if self._filepath:
             for find in Freeway.info_from_path(self._filepath,
@@ -113,6 +141,10 @@ class Freeway(object):
 
     @property
     def data(self):
+        """
+        Return all parsed data inside Freeway object.
+        """
+        
         elements = self.__dict__.copy()
         for attr in ['pattern', '_pattern', '_filepath', '_rules',
                      '_convertionTable', '_rulesfile']:
@@ -122,12 +154,18 @@ class Freeway(object):
 
     @staticmethod
     def get_rules(allrules):
+        """
+        Transform JSON pattern rules into RuleParser objects with name
+        """
         for name, rules in allrules.items():
             if not name.startswith('_'):
                 yield name, [RuleParser(name, rule) for rule in rules]
 
     @staticmethod
     def expandRules(attr, rules):
+        """
+        Evaluate recursively a pattern rule and return a full regex
+        """
         rules._rules["_ignoreMissing"] = True
 
         for rule in rules._rules.get(attr, []):
@@ -215,6 +253,9 @@ class Freeway(object):
 
 
 class RuleParser(object):
+    """
+    Extract fields from pattern rules
+    """
     def __init__(self, name, rule):
         self.name = name
         self.rule = str(rule)
@@ -274,6 +315,9 @@ class RuleParser(object):
 if __name__ == '__main__':
     # "assetFile": ["{project}_{assetType}_{asset}_{task}_v.{version}.{ext}"]
     
-    ruta = r"example_Character_Ainbo_MOD_v001.ma"
-    myPath = Freeway(ruta, pattern="assetFile")
+    ruta = r"example_Character_Vidi_MOD_v001.ma"
+    path = r"C:/example/assets/Character/Vidi/work/example_Character_Vidi_MOD_v001.ma"
+    myPath = Freeway(path)
     print(myPath)
+    
+    print(myPath.assetPath)

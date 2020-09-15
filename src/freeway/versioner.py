@@ -1,7 +1,7 @@
 import os
 import re
 from pathlib import Path
-from errors import NoValidVersion, NoVersionNumber, VersionZero, ExceededPaddingVersion
+from .errors import NoValidVersion, NoVersionNumber, VersionZero, ExceededPaddingVersion
 
 regex_splits = '(?P<head>.*%s)(?P<version>[0-9]+)(?P<tail>[.].*)'
 
