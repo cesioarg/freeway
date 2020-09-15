@@ -1,0 +1,154 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Welcome to Freeway’s documentation! &#8212; Freeway 1.0.0 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="module-freeway">
+<span id="welcome-to-freeway-s-documentation"></span><h1>Welcome to Freeway’s documentation!<a class="headerlink" href="#module-freeway" title="Permalink to this headline">¶</a></h1>
+<p>Freeway is a module for managing file system structures with recursive pattern rules. Hola Divi, te amo!</p>
+<dl class="py class">
+<dt id="freeway.Freeway">
+<em class="property">class </em><code class="sig-prename descclassname">freeway.</code><code class="sig-name descname">Freeway</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">filepath</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">pattern</span><span class="o">=</span><span class="default_value">['auto']</span></em>, <em class="sig-param"><span class="n">rules</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">convertionTable</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">rulesfile</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/freeway/freeway.html#Freeway"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#freeway.Freeway" title="Permalink to this definition">¶</a></dt>
+<dd><p>Freeway main class</p>
+<dl class="py method">
+<dt id="freeway.Freeway.data">
+<em class="property">property </em><code class="sig-name descname">data</code><a class="headerlink" href="#freeway.Freeway.data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return all parsed data inside Freeway object.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="freeway.Freeway.expandRules">
+<em class="property">static </em><code class="sig-name descname">expandRules</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">attr</span></em>, <em class="sig-param"><span class="n">rules</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/freeway/freeway.html#Freeway.expandRules"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#freeway.Freeway.expandRules" title="Permalink to this definition">¶</a></dt>
+<dd><p>Evaluate recursively a pattern rule and return a full regex</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="freeway.Freeway.get_rules">
+<em class="property">static </em><code class="sig-name descname">get_rules</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">allrules</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/freeway/freeway.html#Freeway.get_rules"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#freeway.Freeway.get_rules" title="Permalink to this definition">¶</a></dt>
+<dd><p>Transform JSON pattern rules into RuleParser objects with name</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="freeway.Freeway.info_from_path">
+<em class="property">static </em><code class="sig-name descname">info_from_path</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em>, <em class="sig-param"><span class="n">rules</span></em>, <em class="sig-param"><span class="n">patterns</span><span class="o">=</span><span class="default_value">['auto']</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/freeway/freeway.html#Freeway.info_from_path"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#freeway.Freeway.info_from_path" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parse a path with pattern rules.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="freeway.Freeway.match">
+<em class="property">property </em><code class="sig-name descname">match</code><a class="headerlink" href="#freeway.Freeway.match" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if it can build a complete path</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="freeway.Freeway.pattern">
+<em class="property">property </em><code class="sig-name descname">pattern</code><a class="headerlink" href="#freeway.Freeway.pattern" title="Permalink to this definition">¶</a></dt>
+<dd><p>Current pattern in use.</p>
+</dd></dl>
+
+</dd></dl>
+
+<div class="toctree-wrapper compound">
+</div>
+</div>
+<div class="section" id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
+<li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
+<li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
+</ul>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="#">Freeway</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="#">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, Leandro Inocencio.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.2.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/index.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
