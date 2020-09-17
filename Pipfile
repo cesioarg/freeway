@@ -4,6 +4,12 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [dev-packages]
+pylint = "*"
+twine = "*"
+feedparser = "*"
+sphinx = "*"
+pytest = "*"
+check-manifest = "*"
 
 [packages]
 
