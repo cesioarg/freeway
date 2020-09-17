@@ -1,6 +1,5 @@
 import unittest
-from pathlib import Path
-from versioner import Version
+from freeway import Freeway
 
 
 class Test_RuleParser(unittest.TestCase):
