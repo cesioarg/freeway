@@ -1,8 +1,30 @@
-import unittest
+import pytest
 from freeway import Freeway
 
 
-class Test_RuleParser(unittest.TestCase):
+@pytest.fixture
+def FreewayTest():
+    return Freeway
+
+
+assetRule = {"rules": {"root": ["{asset}.v{version}.{ext}"]}}
+
+
+@pytest.mark.parametrize('path, rules, expected', [
+    ('asset.v007.abc', assetRule, False),
+    ('asset.abc', assetRule, True),
+    (r'C:\projects\assets\asset.v007.abc', assetRule, False),
+    (r'C:\project\assets\asset.abc', assetRule, True),
+    ('C:/projects/assets/asset.v007.abc', assetRule, False),
+    ('C:/project/assets/asset.abc', assetRule, True)
+])
+def test_data(VerData, path, expected):
+    assert FreewayTest(path).data == expected
+
+
+
+"""
+class Test_RuleParser():
     def test___getitem__(self, item):
         pass
     
@@ -19,7 +41,7 @@ class Test_RuleParser(unittest.TestCase):
         pass
 
 
-class Test_Freeway(unittest.TestCase):
+class Test_Freeway():
     def Test_parseFilepath(self, filepath, patterns=['auto']):
         pass
     
@@ -64,7 +86,5 @@ class Test_Freeway(unittest.TestCase):
     
     def Test_version(self, attr):
         pass
-    
 
-if __name__ == '__main__':
-    unittest.main()
+"""
