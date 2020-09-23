@@ -43,7 +43,6 @@ class Freeway(object):
     """
     Freeway main class
     """
-    
     def __init__(self, filepath=None, pattern=['auto'], rules=None,
                  convertionTable=None, rulesfile=None, **kwargs):
 
@@ -54,16 +53,24 @@ class Freeway(object):
                 "No RULESFILE env variable was detected."
 
         self._rulesfile = rulesfile
-        jsonData = loadRulesFromFile(rulesfile)
-        self._rules = OrderedDict(Freeway.get_rules(jsonData['rules']))
-        self._convertionTable = jsonData['convertionTable']
+        
+        if not rules:
+            jsonData = loadRulesFromFile(rulesfile)
+            rules = jsonData.get('rules', None)
+  
+            if not convertionTable:
+                convertionTable = jsonData.get('convertionTable', None)
+
+        self._rules = OrderedDict(Freeway.get_rules(rules))
+        self._convertionTable = convertionTable
 
         for key, value in kwargs.items():
             setattr(self, key, value)
 
         if filepath:
             self._filepath = filepath.replace('\\', '/')
-            self.pattern = pattern
+        
+        self.pattern = pattern
 
     def __str__(self):
         return '%s: %s' % (self.pattern, str(self.data))
@@ -77,6 +84,8 @@ class Freeway(object):
         Parse a path with pattern rules.
         """
         assert isinstance(path, str), 'Path isnt str type'
+        if isinstance(patterns, str):
+            patterns = [patterns]
         for pattern in patterns:
             if pattern == 'auto':
                 for key in rules:
@@ -85,7 +94,7 @@ class Freeway(object):
                         if match:
                             for data in Freeway.info_from_path(path,
                                                                rules,
-                                                               [item.name]):
+                                                               item.name):
                                 yield data
             else:
                 for item in Freeway.expandRules(pattern, Freeway(rules=rules)):
@@ -119,6 +128,14 @@ class Freeway(object):
 
         return fullMatch
 
+    def _parsePath(self):
+        if self._filepath:
+            for find in Freeway.info_from_path(self._filepath,
+                                               self._rules,
+                                               self._pattern):
+                for key, value in find.items():
+                    setattr(self, key, value)
+                    
     @property
     def pattern(self):
         """
@@ -132,13 +149,23 @@ class Freeway(object):
         Setting a pattern and parse new fields.
         """
         self._pattern = [value] if isinstance(value, str) else value
-        if self._filepath:
-            for find in Freeway.info_from_path(self._filepath,
-                                               self._rules,
-                                               self._pattern):
-                for key, value in find.items():
-                    setattr(self, key, value)
-
+        self._parsePath()
+        
+    @property
+    def filepath(self):
+        """
+        Current filepath in use.
+        """
+        return self._filepath
+    
+    @filepath.setter
+    def filepath(self, value):
+        """
+        Setting a filepath and parse new fields.
+        """
+        self._filepath = value
+        self._parsePath()
+        
     @property
     def data(self):
         """
@@ -146,7 +173,8 @@ class Freeway(object):
         """
         
         elements = self.__dict__.copy()
-        for attr in ['pattern', '_pattern', '_filepath', '_rules',
+        for attr in ['pattern', '_pattern',
+                     'filepath', '_filepath', '_rules',
                      '_convertionTable', '_rulesfile']:
             elements.pop(attr, None)
 
@@ -167,7 +195,7 @@ class Freeway(object):
         Evaluate recursively a pattern rule and return a full regex
         """
         rules._rules["_ignoreMissing"] = True
-
+        
         for rule in rules._rules.get(attr, []):
             rule = RuleParser(attr, str(rule))
             while set(rules._rules) & set(rule.fields):
@@ -310,14 +338,3 @@ class RuleParser(object):
                 field, _FIELDREPLACE % fieldReplace, 1)
 
         return '' + regexRule
-
-
-if __name__ == '__main__':
-    # "assetFile": ["{project}_{assetType}_{asset}_{task}_v.{version}.{ext}"]
-    
-    ruta = r"example_Character_Vidi_MOD_v001.ma"
-    path = r"C:/example/assets/Character/Vidi/work/example_Character_Vidi_MOD_v001.ma"
-    myPath = Freeway(path)
-    print(myPath)
-    
-    print(myPath.assetPath)
