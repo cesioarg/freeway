@@ -18,99 +18,85 @@ def VerData():
 ])
 def test_isVersionless(VerData, path, expected):
     assert VerData(path).isVersionless == expected
+    
 
+@pytest.mark.parametrize('path, expected', [
+    ('asset.v007.abc', 'asset.abc'),
+    ('asset.abc', 'asset.abc'),
+    (r'C:\projects\assets\asset.v007.abc', 'C:/projects/assets/asset.abc'),
+    (r'C:\project\assets\asset.abc', 'c:/project/assets/asset.abc'),
+    ('C:/projects/assets/asset.v007.abc', 'C:/projects/assets/asset.abc'),
+    ('C:/project/assets/asset.abc', 'c:/project/assets/asset.abc')
+])
+def test_versionless(VerData, path, expected):
+    assert VerData(path).versionless == expected
+
+
+@pytest.mark.parametrize('path, expected', [
+    ('asset.v007.abc', 'asset.v123.abc'),
+    ('asset.abc', 'asset.v123.abc'),
+    (r'C:\projects\assets\asset.v007.abc', 'C:/projects/assets/asset.v123.abc'),
+    (r'C:\project\assets\asset.abc', 'c:/project/assets/asset.v123.abc'),
+    ('C:/projects/assets/asset.v007.abc', 'C:/projects/assets/asset.v123.abc'),
+    ('C:/project/assets/asset.abc', 'c:/project/assets/asset.v123.abc')
+])
+def test_to(VerData, path, expected):
+    assert VerData(path).to(123) == expected
+
+
+@pytest.mark.parametrize('path, expected', [
+    ('asset.v007.abc', 7),
+    ('asset.abc', None),
+    (r'C:\projects\assets\asset.v007.abc', 7),
+    (r'C:\project\assets\asset.abc', None),
+    ('C:/projects/assets/asset.v007.abc', 7),
+    ('C:/project/assets/asset.abc', None)
+])
+def test_current(VerData, path, expected):
+    assert VerData(path).current == expected
+
+
+@pytest.mark.parametrize('path, expected', [
+    ('asset.v007.abc', 'asset.v008.abc'),
+    ('asset.abc', None),
+    (r'C:\projects\assets\asset.v007.abc', 'asset.v008.abc'),
+    (r'C:\project\assets\asset.abc', None),
+    ('C:/projects/assets/asset.v007.abc', 'asset.v008.abc'),
+    ('C:/project/assets/asset.abc', None)
+])
+def test_next(VerData, path, expected):
+    assert VerData(path).next == expected
+
+
+@pytest.mark.parametrize('path, expected', [
+    ('asset.v007.abc', 'asset.v006.abc'),
+    ('asset.abc', None),
+    (r'C:\projects\assets\asset.v007.abc', 'asset.v006.abc'),
+    (r'C:\project\assets\asset.abc', None),
+    ('C:/projects/assets/asset.v007.abc', 'asset.v006.abc'),
+    ('C:/project/assets/asset.abc', None)
+])
+def test_previous(VerData, path, expected):
+    assert VerData(path).previous == expected
+
+"""
+@pytest.mark.parametrize('path, expected', [
+    ('asset.v007.abc', 'asset.v001.abc'),
+    ('asset.abc', 'asset.v001.abc'),
+    (r'C:\projects\assets\asset.v007.abc', 'asset.v001.abc'),
+    (r'C:\project\assets\asset.abc', 'asset.v001.abc'),
+    ('C:/projects/assets/asset.v007.abc', 'asset.v001.abc'),
+    ('C:/project/assets/asset.abc', 'asset.v001.abc')
+])
+def test_first(VerData, path, expected):
+    assert VerData(path).first == expected
+
+"""
 
 
 """
 postfix = Version('').postfix
 
-case_vars = ['asset.v007.abc',
-             'asset.abc',
-             r'C:\projects\assets\asset.v007.abc',
-             r'C:\project\assets\asset.abc',
-             'C:/projects/assets/asset.v007.abc',
-             'C:/project/assets/asset.abc']
-
-Cases = {'isVersionless': [False, True, False, True, False, True],
-         'versionless': ['asset.abc',
-                         'asset.abc',
-                         'C:/projects/assets/asset.abc',
-                         'c:/project/assets/asset.abc',
-                         'C:/projects/assets/asset.abc',
-                         'c:/project/assets/asset.abc'],
-         'to_version': ['asset%s015.abc' % postfix,
-                        'asset%s015.abc' % postfix,
-                        'C:/projects/assets/asset%s015.abc' % postfix,
-                        'c:/project/assets/asset%s015.abc' % postfix,
-                        'C:/projects/assets/asset%s015.abc' % postfix,
-                        'c:/project/assets/asset%s015.abc' % postfix],
-         'first': ['asset%s001.abc' % postfix,
-                   'asset%s001.abc' % postfix,
-                   'C:/projects/assets/asset%s001.abc' % postfix,
-                   'C:/project/assets/asset%s001.abc' % postfix,
-                   'C:/projects/assets/asset%s001.abc' % postfix,
-                   'C:/project/assets/asset%s001.abc' % postfix],
-         'current': [7,
-                     None,
-                     7,
-                     None,
-                     7,
-                     None],
-         'next': ['asset%s008.abc' % postfix,
-                  None,
-                  'C:/projects/assets/asset%s008.abc' % postfix,
-                  None,
-                  'C:/projects/assets/asset%s008.abc' % postfix,
-                  None],
-         'previous': ['asset%s006.abc' % postfix,
-                      None,
-                      'C:/projects/assets/asset%s006.abc' % postfix,
-                      None,
-                      'C:/projects/assets/asset%s006.abc' % postfix,
-                      None],
-         'last': ['asset%s001.abc' % postfix,
-                  'asset%s001.abc' % postfix,
-                  'C:/projects/assets/asset%s001.abc' % postfix,
-                  'c:/project/assets/asset%s001.abc' % postfix,
-                  'C:/projects/assets/asset%s001.abc' % postfix,
-                  'c:/project/assets/asset%s001.abc' % postfix],
-         }
-
-
-
-class Test_Version():
-    def test_isVersionless(self):
-        for index, solution in enumerate(Cases['isVersionless']):
-            case = Version(case_vars[index]).isVersionless
-            assert case == solution
-
-    def test_versionless(self):
-        for index, solution in enumerate(Cases['versionless']):
-            solution = str(Path(solution).resolve())
-            case = str(Version(case_vars[index]).versionless)
-            assert case == solution
-
-    def test_to(self):
-        for index, solution in enumerate(Cases['to_version']):
-            case = str(Version(case_vars[index]).to(15))
-            solution = str(Path(solution).resolve())
-            assert case == solution
-            
-    def test_current(self):
-        for index, solution in enumerate(Cases['current']):
-            case = Version(case_vars[index]).current
-            assert case == solution
-            
-    def test_next(self):
-        for index, solution in enumerate(Cases['next']):
-            case = Version(case_vars[index]).next
-            assert case == solution
-            
-    def test_previous(self):
-        for index, solution in enumerate(Cases['previous']):
-            case = Version(case_vars[index]).previous
-            assert case == solution
-            
             
 class Test_VersionFileSystem():
     def test_first(self):
