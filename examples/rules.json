@@ -85,7 +85,8 @@
         "assetFile": ["{project}_{assetType}_{asset}_{task}_v{version}.{ext}"],
         "assetPath": ["{assetDir}/{process}/{assetFile}"],
 
-        "assetWorkspaceDir": ["{assetDir}/{process}/"],
+        "assetWorkspaceDir": ["{assetDir}/{process}"],
+        "assetWorkspaceStage": ["{assetWorkspaceDir}/{stage}"],
         "assetWorkspaceFile": ["{project}_{assetPrefix}_{asset}_{task}.v{version}.{ext}"],
         "assetWorkspacePath": ["{assetWorkspaceStage}/{assetWorkspaceFile}"],
         
