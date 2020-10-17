@@ -78,31 +78,28 @@ class Freeway(object):
     def __repr__(self):
         return str(self)
 
-    @staticmethod
-    def info_from_path(path, rules, patterns=['auto']):
+    def info_from_path(self):
         """
         Parse a path with pattern rules.
         """
-        assert isinstance(path, str), 'Path isnt str type'
-        if isinstance(patterns, str):
-            patterns = [patterns]
-        for pattern in patterns:
-            if pattern == 'auto':
-                for key in rules:
-                    for item in Freeway.expandRules(key, Freeway(rules=rules)):
-                        match = re.match(item.regex, path, re.IGNORECASE)
-                        if match:
-                            for data in Freeway.info_from_path(path,
-                                                               rules,
-                                                               item.name):
-                                yield data
-            else:
-                for item in Freeway.expandRules(pattern, Freeway(rules=rules)):
-                    match = re.match(item.regex, path, re.IGNORECASE)
-                    if match:
-                        info = {pattern: value for pattern, value in match.groupdict(
-                        ).items() if not pattern.endswith('_')}
-                        yield info
+        patterns = self._rules.keys() if self._pattern == ["auto"] else self._pattern
+
+        self._pattern = []
+
+        for pattern, data in [(p, self.resolve_pattern(p)) for p in patterns]:
+            if data:
+                yield data
+                self._pattern.append(pattern)
+
+    def resolve_pattern(self, pattern):
+        resolved = {}
+
+        for item in Freeway.expandRules(pattern, Freeway(rules=self._rules)):
+            match = re.match(item.regex, self._filepath, re.IGNORECASE)
+            if match:
+                resolved.update({pattern: value for pattern, value in match.groupdict(
+                ).items() if not pattern.endswith('_')})
+        return resolved
 
     @property
     def match(self):
@@ -130,9 +127,7 @@ class Freeway(object):
 
     def _parsePath(self):
         if self._filepath:
-            for find in Freeway.info_from_path(self._filepath,
-                                               self._rules,
-                                               self._pattern):
+            for find in self.info_from_path():
                 for key, value in find.items():
                     setattr(self, key, value)
                     
@@ -271,6 +266,10 @@ class Freeway(object):
     def update(self, data):
         self.__dict__.update(data)
 
+    def copy(self):
+        return Freeway(self.filepath, pattern=self.pattern, rules=self._rules,
+                       convertionTable=self._convertionTable, **self.data)
+
     def clean(self):
         notRemove = ['pattern', '_rules', '_convertionTable', '_rulesfile']
         for key in set(self.__dict__) ^ set(notRemove):
@@ -337,4 +336,4 @@ class RuleParser(object):
             regexRule = regexRule.replace(
                 field, _FIELDREPLACE % fieldReplace, 1)
 
-        return '' + regexRule
+        return '^' + regexRule + '$'
