@@ -78,27 +78,40 @@ class Freeway(object):
     def __repr__(self):
         return str(self)
 
-    def info_from_path(self):
+    def info_from_path(self, firstMatch=True):
         """
         Parse a path with pattern rules.
         """
-        patterns = self._rules.keys() if self._pattern == ["auto"] else self._pattern
+        patterns = list(self._rules.keys()) if self._pattern == ["auto"] else self._pattern
 
         self._pattern = []
 
-        for pattern, data in [(p, self.resolve_pattern(p)) for p in patterns]:
+        for pattern in patterns:
+            data = self.resolve_pattern(pattern)
             if data:
                 yield data
                 self._pattern.append(pattern)
+                if firstMatch:
+                    break
 
+    def ensureCompiledRegex(self, pattern):
+        for rule in self._rules.get(pattern):
+            if not rule.compiled:
+                rules = list(self.expandRules(pattern))
+                self._rules[pattern] = rules
+        
     def resolve_pattern(self, pattern):
         resolved = {}
 
-        for item in Freeway.expandRules(pattern, Freeway(rules=self._rules)):
-            match = re.match(item.regex, self._filepath, re.IGNORECASE)
+        self.ensureCompiledRegex(pattern)
+                
+        for rule in self._rules.get(pattern):
+            match = rule.compiled.match(self._filepath)
+
             if match:
                 resolved.update({pattern: value for pattern, value in match.groupdict(
                 ).items() if not pattern.endswith('_')})
+
         return resolved
 
     @property
@@ -109,7 +122,7 @@ class Freeway(object):
         patterns = {}
         fullMatch = False
         for pattern in self.pattern:
-            for rule in Freeway.expandRules(pattern, Freeway(rules=self._rules)):
+            for rule in self.expandRules(pattern):
                 for field in rule.fields:
                     if self.data.get(field):
                         patterns[pattern] = True
