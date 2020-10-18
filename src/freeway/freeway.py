@@ -184,24 +184,24 @@ class Freeway(object):
             if not name.startswith('_'):
                 yield name, [RuleParser(name, rule) for rule in rules]
 
-    @staticmethod
-    def expandRules(attr, rules):
+    def expandRules(self, attr):
         """
         Evaluate recursively a pattern rule and return a full regex
         """
-        rules._rules["_ignoreMissing"] = True
+        rules = self._rules.copy()
+        self._rules["_ignoreMissing"] = True
         
-        for rule in rules._rules.get(attr, []):
+        for rule in rules.get(attr, []):
             rule = RuleParser(attr, str(rule))
-            while set(rules._rules) & set(rule.fields):
+            while set(rules) & set(rule.fields):
                 for field in rule.fields:
                     if field in rules:
                         rule.rule = rule.rule.replace('{%s}' % field,
-                                                      rules.get(field, field))
-
+                                                      rules.get(field, field)[0].rule)
+            rule.compile(re.IGNORECASE)
             yield rule
 
-        rules._rules["_ignoreMissing"] = False
+        self._rules["_ignoreMissing"] = False
 
     def __getattribute__(self, attr):
         ignoreMissing = object.__getattribute__(
@@ -211,25 +211,16 @@ class Freeway(object):
         if rules:
             for rule in rules:
                 try:
-                    name = rule.rule
-                    for field in rule.fields:
-                        value = getattr(self, field, None)
-                        if value is not None:
-                            name = name.replace('{%s}' % field, value)
-                        else:
-                            break
+                    data = {field: getattr(self, field, None) for field in rule.fields}
+                    missing = [k for k, v in data.items() if v is None]
+                    if missing:
+                        raise AttributeError
 
-                    if not _PLACEHOLDER_REGEX.findall(name):
-                        break
+                    name = rule.rule.format(**data)
 
                 except AttributeError:
-                    raise Exception("Can't find '" + field + "' attribute.")
-
-            missing = [part for part in _PLACEHOLDER_REGEX.findall(name)]
-
-            if missing and not ignoreMissing:
-                raise AttributeError(
-                    'No se ha encontrado el atributo: %s' % ', '.join(missing))
+                    if not ignoreMissing:
+                        raise Exception("Can't find [%s] attribute(s)." % ', '.join(missing))
 
             return name
         else:
@@ -246,7 +237,6 @@ class Freeway(object):
                                 value = object.__getattribute__(self, key)
                                 index = switchs[table][key].index(value)
                                 return switchs[table][attr][index]
-
                             except (AttributeError, ValueError):
                                 pass
 
@@ -286,6 +276,7 @@ class RuleParser(object):
     def __init__(self, name, rule):
         self.name = name
         self.rule = str(rule)
+        self.compiled = None
 
     def __getitem__(self, item):
         index = 0
