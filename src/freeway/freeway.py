@@ -324,7 +324,7 @@ class RuleParser(object):
 
     @property
     def regex(self):
-        if "_regex" in Rules.__dict__:
+        if "_regex" in self.__dict__:
             return self._regex
 
         duplis = []
