@@ -83,9 +83,9 @@
         "assetsPath": ["{projectPath}/assets/{assetType}"], 
         "assetDir": ["{assetsPath}/{asset}"],
         "assetFile": ["{project}_{assetType}_{asset}_{task}_v{version}.{ext}"],
-        "assetPath": ["{assetDir}/{process}/{assetFile}"],
+        "assetPath": ["{assetDir}/{step}/{assetFile}"],
 
-        "assetWorkspaceDir": ["{assetDir}/{process}"],
+        "assetWorkspaceDir": ["{assetDir}/{step}"],
         "assetWorkspaceStage": ["{assetWorkspaceDir}/{stage}"],
         "assetWorkspaceFile": ["{project}_{assetPrefix}_{asset}_{task}.v{version}.{ext}"],
         "assetWorkspacePath": ["{assetWorkspaceStage}/{assetWorkspaceFile}"],
@@ -94,7 +94,7 @@
         "sequencePath": ["{sequencesPath}/{sequence}"],
         "shotsPath": ["{sequencePath}"], 
         "shotPath": ["{shotsPath}/{shot}"],
-        "shotWorkspace": ["{shotPath}/{process}"],
+        "shotWorkspace": ["{shotPath}/{step}"],
         "shotStage": ["{shotWorkspace}/{stage}"], 
 
         "shotWorkspaceFile": ["{shotStage}/{shotFile}"], 
@@ -105,20 +105,20 @@
     },
     "convertionTable":
     {
-        "assetTypeSwitch": 
+        "assetType": 
         {
-            "short": ["CH", "PR", "LC", "LE"],
-            "long": ["Character", "Prop", "Location", "Element"]
+            "assetPrefix": ["CH", "PR", "LC", "LE"],
+            "assetType": ["Character", "Prop", "Location", "Element"]
         },
-        "assetProcessSwitch":
+        "assetStep":
         {
-            "long": ["art", "model", "shading", "rig", "groom", "cloth"],
-            "short": ["art", "mdl", "shd", "rig", "grm", "cth"]
+            "step": ["art", "model", "shading", "rig", "groom", "cloth"],
+            "task": ["art", "mdl", "shd", "rig", "grm", "cth"]
         },
-        "shotProcessSwitch":
+        "shotStep":
         {
-            "long": ["layout", "animation", "skinfix", "vfx", "simulation", "vfx", "lighting", "lighting"],
-            "short": ["lyt", "anm", "skf", "vfx", "sim", "vfx", "lgtng", "lgt"]
+            "step": ["layout", "animation", "skinfix", "vfx", "simulation", "vfx", "lighting"],
+            "task": ["lyt", "anm", "skf", "vfx", "sim", "vfx", "lgt"]
         }
     }    
 }
