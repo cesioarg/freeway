@@ -324,6 +324,9 @@ class RuleParser(object):
 
     @property
     def regex(self):
+        if "_regex" in Rules.__dict__:
+            return self._regex
+
         duplis = []
         regexRule = self.rule
         for field in _FIELDPATTERN_REGEX.findall(self.rule):
@@ -336,4 +339,8 @@ class RuleParser(object):
             regexRule = regexRule.replace(
                 field, _FIELDREPLACE % fieldReplace, 1)
 
-        return '^' + regexRule + '$'
+        self._regex = "^%s$" % regexRule
+        return self._regex
+    
+    def compile(self, flag):
+        self.compiled = re.compile(self.regex, flag)
