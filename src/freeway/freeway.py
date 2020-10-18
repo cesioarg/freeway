@@ -32,7 +32,7 @@ def loadRulesFromFile(filename):
         # load jsonData from global, reduce disk usage
         return jsonData
     
-    print("Loading JSON file:", filename)
+    print("Loading JSON file: %s" % filename)
     
     with open(filename, 'r') as jsonf:
         jsonData = json.loads(jsonf.read())
