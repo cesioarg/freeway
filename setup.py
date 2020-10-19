@@ -19,7 +19,7 @@ setup(
     long_description=long_description,
     long_description_content_type="text/x-rst",
     url="https://github.com/cesioarg",
-    download_url = 'https://github.com/cesioarg/freeway/archive/v1.0.0.tar.gz',
+    download_url = 'https://github.com/cesioarg/freeway/archive/%s.tar.gz' % __version__,
     author="Leandro Inocencio",
     author_email="cesio.arg@gmail.com",
     keywords = ['filesystem', 'pipeline', 'parser', 'forder', 'patternvideos'],
