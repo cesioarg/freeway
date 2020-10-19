@@ -10,6 +10,7 @@ feedparser = "*"
 sphinx = "*"
 pytest = "*"
 check-manifest = "*"
+autopep8 = "*"
 
 [packages]
 
