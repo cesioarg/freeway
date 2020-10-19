@@ -6,7 +6,7 @@ sys.path.insert(0, os.path.abspath('./src'))
 
 from freeway import __version__
 
-with open('README.md', 'r') as desc:
+with open('README.rst', 'r') as desc:
     long_description = desc.read()
     
 
@@ -17,7 +17,7 @@ setup(
     packages=["freeway"],
     description="Freeway is a module for managing file system structures with recursive pattern rules.",
     long_description=long_description,
-    long_description_content_type="text/markdown",
+    long_description_content_type="text/x-rst",
     url="https://github.com/cesioarg",
     download_url = 'https://github.com/cesioarg/freeway/archive/v1.0.0.tar.gz',
     author="Leandro Inocencio",
