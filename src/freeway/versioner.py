@@ -159,7 +159,7 @@ class VersionFileSystem(BaseVersion):
         return VersionFileSystem(self).to(version).exists
 
     def __next__(self):
-        vers = list(self)
+        vers = sorted(list(self))
         current = self.current
         while vers:
             if current == vers.pop(0):
@@ -169,7 +169,7 @@ class VersionFileSystem(BaseVersion):
                     return None
 
     def __previous__(self):
-        vers = list(self)
+        vers = sorted(list(self))
         current = self.current
         while vers:
             if current == vers.pop():
