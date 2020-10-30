@@ -7,7 +7,7 @@ from freeway import Version
 def VerData():
     return Version
 
-root = os.getcwd()
+root = '%s/tests/versionerExamples' % os.getcwd()
 
 
 @pytest.mark.parametrize('path, expected', [
