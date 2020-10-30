@@ -151,7 +151,7 @@ class VersionFileSystem(BaseVersion):
         dirname, basename = os.path.split(self.head)
 
         for root, dirnames, filenames in os.walk(dirname):
-            for filename in fnmatch.filter(filenames, basename + '*'):
+            for filename in sorted(fnmatch.filter(filenames, basename + '*')):
                 yield VersionFileSystem('/'.join([root, filename]))
 
 
@@ -159,7 +159,7 @@ class VersionFileSystem(BaseVersion):
         return VersionFileSystem(self).to(version).exists
 
     def __next__(self):
-        vers = sorted(list(self))
+        vers = list(self)
         current = self.current
         while vers:
             if current == vers.pop(0):
@@ -169,7 +169,7 @@ class VersionFileSystem(BaseVersion):
                     return None
 
     def __previous__(self):
-        vers = sorted(list(self))
+        vers = list(self)
         current = self.current
         while vers:
             if current == vers.pop():
