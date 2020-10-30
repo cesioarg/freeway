@@ -8,12 +8,12 @@ pylint = "*"
 twine = "*"
 feedparser = "*"
 sphinx = "*"
-pytest = "*"
 check-manifest = "*"
 autopep8 = "*"
 
 [packages]
 cython = "*"
+pytest = "*"
 
 [requires]
 python_version = "3.7"
