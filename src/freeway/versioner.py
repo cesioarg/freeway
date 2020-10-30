@@ -1,17 +1,17 @@
+# cython: language_level=2, boundscheck=False
 import os
 import re
-from pathlib import Path
-from .errors import NoValidVersion, NoVersionNumber, VersionZero, ExceededPaddingVersion
+import fnmatch
+from .errors import (NoValidVersion, NoVersionNumber, 
+                     VersionZero, ExceededPaddingVersion)
 
-regex_splits = '(?P<head>.*%s)(?P<version>[0-9]+)(?P<tail>[.].*)'
+regex_splits = '(?P<head>.*%s)(?P<version>[0-9]+)(?P<tail>[.]%s)'
 
 
 class BaseVersion(object):
     def __init__(self, filename, pads=3, postfix='.v', ext='.*'):
-        if issubclass(filename.__class__, Path):
+        if isinstance(filename, str):
             self.filename = filename
-        elif isinstance(filename, str):
-            self.filename = Path(filename)
         elif isinstance(filename, Version) or isinstance(filename, VersionFileSystem):
             self.filename = filename.filename
             pads = filename.pads
@@ -22,10 +22,10 @@ class BaseVersion(object):
 
         self.postfix = postfix
         self.pads = pads
-        extension = self.filename.suffix
+        extension = os.path.splitext(self.filename)[-1]
         self.ext = extension[1:] if extension else ext
-        self.regex_splits = re.compile(regex_splits % self.postfix)
-        self.head, self.version, self.tail = self._splits(str(filename))
+        self.regex_splits = re.compile(regex_splits % (self.postfix, self.ext))
+        self.head, self.version, self.tail = self._splits(self.filename)
 
     def __str__(self):
         return str(self.filename)
@@ -77,10 +77,11 @@ class BaseVersion(object):
         version = self.int_to_pad(int(self.pads), int(version))
 
         if self.isVersionless:
-            self.filename = Path('%s%s%s%s' %
-                                 (self.head, self.postfix, version, self.tail))
+            self.filename = '%s%s%s%s' % (self.head, self.postfix,
+                                          version, self.tail)
         else:
-            self.filename = Path('%s%s%s' % (self.head, version, self.tail))
+            self.filename = '%s%s%s' % (self.head, version, self.tail)
+
         return self.__class__(self)
 
     @property
@@ -128,10 +129,8 @@ class Version(BaseVersion):
 
 class VersionFileSystem(BaseVersion):
     def __init__(self, filename, pads=3, postfix='.v', ext='.*'):
-        if issubclass(filename.__class__, Path):
+        if isinstance(filename, str):
             self.filename = filename
-        elif isinstance(filename, str):
-            self.filename = Path(filename)
         elif isinstance(filename, Version) or isinstance(filename, VersionFileSystem):
             self.filename = filename.filename
             pads = filename.pads
@@ -140,15 +139,21 @@ class VersionFileSystem(BaseVersion):
         else:
             raise TypeError
 
-        if self.filename.exists() and not self.filename.is_absolute():
-            self.filename = Path.cwd() / self.filename
+        if os.path.exists(self.filename) and not os.path.isabs(self.filename):
+            self.filename = '/'.join([os.getcwd(), self.filename])
+        
+        # Python3.x
+        #super().__init__(str(self.filename), pads=pads, postfix=postfix, ext=ext)
+        super(VersionFileSystem, self).__init__(str(self.filename), pads=pads, postfix=postfix, ext=ext)
 
-        super().__init__(str(self.filename), pads=pads, postfix=postfix, ext=ext)
 
     def __iter__(self):
-        filename = Path(self.head)
-        for ver in sorted(filename.parent.glob(filename.name + '*')):
-            yield VersionFileSystem(ver)
+        dirname, basename = os.path.split(self.head)
+
+        for root, dirnames, filenames in os.walk(dirname):
+            for filename in fnmatch.filter(filenames, basename + '*'):
+                yield VersionFileSystem('/'.join([root, filename]))
+
 
     def __contains__(self, version):
         return VersionFileSystem(self).to(version).exists
@@ -190,6 +195,7 @@ class VersionFileSystem(BaseVersion):
                     last = ver
             except NoVersionNumber:
                 pass
+
         return last
 
     @property
@@ -202,10 +208,4 @@ class VersionFileSystem(BaseVersion):
 
     @property
     def exists(self):
-        return self.filename.exists()
-
-
-if __name__ == "__main__":
-    items = Version('tests/versionerExamples/test_mod.v003.txt')
-    #data = VersionFileSystem(Path('tests/versionerExamples/test_mod.v001.txt'))
-    print(1 in items.fs.previous)
+        return os.path.exists(self.filename)
