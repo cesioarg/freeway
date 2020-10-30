@@ -52,4 +52,4 @@ if not sys.platform.startswith('linux'):
     ]
     config.update({'ext_modules': cythonize(extensions, build_dir="build")})
 
-setup(config)
+setup(**config)
