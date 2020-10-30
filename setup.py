@@ -21,7 +21,7 @@ config = {
     'download_url': 'https://github.com/cesioarg/freeway/archive/%s.tar.gz' % __version__,
     'author': "Leandro Inocencio",
     'author_email': "cesio.arg@gmail.com",
-    'keywords': ['filesystem', 'pipeline', 'parser', 'forder', 'patternvideos'],
+    'keywords': ['filesystem', 'pipeline', 'parser', 'folders', 'patterns'],
     'package_dir': {'':'src'},
     'install_requires': [
         'cython',
@@ -46,9 +46,9 @@ if not sys.platform.startswith('linux'):
     from Cython.Build import cythonize
 
     extensions = [
-        Extension("freeway", ["src/freeway/freeway.py"]),
-        Extension("versioner", ["src/freeway/versioner.py"]),
-        Extension("errors", ["src/freeway/errors.py"])
+        Extension("freeway.freeway", ["src/freeway/freeway.py"]),
+        Extension("freeway.versioner", ["src/freeway/versioner.py"]),
+        Extension("freeway.errors", ["src/freeway/errors.py"])
     ]
     config.update({'ext_modules': cythonize(extensions, build_dir="build")})
 
