@@ -11,8 +11,10 @@ sphinx = "*"
 pytest = "*"
 check-manifest = "*"
 autopep8 = "*"
+cython = "*"
 
 [packages]
+
 
 [requires]
 python_version = "3.7"
