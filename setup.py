@@ -30,6 +30,9 @@ setup(
     author_email="cesio.arg@gmail.com",
     keywords = ['filesystem', 'pipeline', 'parser', 'forder', 'patternvideos'],
     package_dir={'':'src'},
+    install_requires=[
+        'cython',
+    ],
     ext_modules=cythonize(extensions, build_dir="build"),
     classifiers=[
         "Development Status :: 3 - Alpha",
