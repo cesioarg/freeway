@@ -1,3 +1,4 @@
+from __future__ import print_function
 from freeway import Freeway
 
 
@@ -19,7 +20,7 @@ if __name__ == '__main__':
             'asset': 'Table',
             'process': 'MOD',
             'stage': 'Work',
-            'assetPrefix': 'PR',
+            #'assetPrefix': 'PR',
             'task': 'MOD',
             'version': '001',
             'ext': 'abc'}
