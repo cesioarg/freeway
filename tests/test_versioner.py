@@ -1,5 +1,4 @@
 import pytest
-from pathlib import Path
 from freeway import Version
 
 
@@ -79,48 +78,64 @@ def test_next(VerData, path, expected):
 def test_previous(VerData, path, expected):
     assert VerData(path).previous == expected
 
-"""
+# Real Filesystem Tests!
+
 @pytest.mark.parametrize('path, expected', [
-    ('asset.v007.abc', 'asset.v001.abc'),
-    ('asset.abc', 'asset.v001.abc'),
-    (r'C:\projects\assets\asset.v007.abc', 'asset.v001.abc'),
-    (r'C:\project\assets\asset.abc', 'asset.v001.abc'),
-    ('C:/projects/assets/asset.v007.abc', 'asset.v001.abc'),
-    ('C:/project/assets/asset.abc', 'asset.v001.abc')
+    ('tests/versionerExamples/test_mod.v002.txt', 'tests/versionerExamples/test_mod.v001.txt'),
+    ('tests/versionerExamples/test_mod.v001.txt', None),
+    ('tests/versionerExamples/test_mod.v005.txt', None),
+    ('tests/versionerExamples/test_mod.v010.txt', None)
 ])
-def test_first(VerData, path, expected):
-    assert VerData(path).first == expected
-
-"""
+def test_fs_previous(VerData, path, expected):
+    assert VerData(path).fs.previous == expected
 
 
-"""
-postfix = Version('').postfix
-
-            
-class Test_VersionFileSystem():
-    def test_first(self):
-        path = Path.cwd() / Path("tests/versionerExamples/test_mod.v001.txt")
-        ver = Version("tests/versionerExamples/test_mod.v002.txt").fs
-        assert str(ver.first) == str(path)
-            
-    def test_last(self):
-        path = Path.cwd() / Path("tests/versionerExamples/test_mod.v003.txt")
-        ver = Version("tests/versionerExamples/test_mod.v001.txt").fs
-        assert str(ver.last) == str(path)
-        
-    def test_next(self):
-        path = Path.cwd() / Path("tests/versionerExamples/test_mod.v003.txt")
-        ver = Version("tests/versionerExamples/test_mod.v002.txt").fs
-        assert str(ver.next) == str(path)
-            
-    def test_previous(self):
-        path = Path.cwd() / Path("tests/versionerExamples/test_mod.v001.txt")
-        ver = Version("tests/versionerExamples/test_mod.v002.txt").fs
-        assert str(ver.previous) == str(path)
-
-    def test_contains(self):
-        assert 1 in Version("tests/versionerExamples/test_mod.v002.txt").fs
+@pytest.mark.parametrize('path, expected', [
+    ('tests/versionerExamples/test_mod.v002.txt', 'tests/versionerExamples/test_mod.v003.txt'),
+    ('tests/versionerExamples/test_mod.v001.txt', 'tests/versionerExamples/test_mod.v002.txt'),
+    ('tests/versionerExamples/test_mod.v005.txt', None),
+    ('tests/versionerExamples/test_mod.v010.txt', None)
+])
+def test_fs_next(VerData, path, expected):
+    assert VerData(path).fs.next == expected
 
 
-"""
+@pytest.mark.parametrize('path, expected', [
+    ('tests/versionerExamples/test_mod.v002.txt', 'tests/versionerExamples/test_mod.v001.txt'),
+    ('tests/versionerExamples/test_mod.v001.txt', 'tests/versionerExamples/test_mod.v001.txt'),
+    ('tests/versionerExamples/test_mod.v005.txt', 'tests/versionerExamples/test_mod.v001.txt'),
+    ('tests/versionerExamples/test_mod.v010.txt', 'tests/versionerExamples/test_mod.v001.txt'),
+])
+def test_fs_first(VerData, path, expected):
+    assert VerData(path).fs.first == expected
+
+
+@pytest.mark.parametrize('path, expected', [
+    ('tests/versionerExamples/test_mod.v002.txt', 'tests/versionerExamples/test_mod.v004.txt'),
+    ('tests/versionerExamples/test_mod.v001.txt', 'tests/versionerExamples/test_mod.v004.txt'),
+    ('tests/versionerExamples/test_mod.v005.txt', 'tests/versionerExamples/test_mod.v004.txt'),
+    ('tests/versionerExamples/test_mod.v010.txt', 'tests/versionerExamples/test_mod.v004.txt'),
+])
+def test_fs_last(VerData, path, expected):
+    assert VerData(path).fs.last == expected
+
+
+@pytest.mark.parametrize('path, expected', [
+    ('tests/versionerExamples/test_mod.v002.txt', True),
+    ('tests/versionerExamples/test_mod.v001.txt', True),
+    ('tests/versionerExamples/test_mod.v005.txt', False),
+    ('tests/versionerExamples/test_mod.v010.txt', False),
+])
+def test_fs_exists(VerData, path, expected):
+    assert VerData(path).fs.exists == expected
+
+
+@pytest.mark.parametrize('path, version, expected', [
+    ('tests/versionerExamples/test_mod.v002.txt', 1, True),
+    ('tests/versionerExamples/test_mod.v001.txt', 2, True),
+    ('tests/versionerExamples/test_anm.v005.txt', 3, False),
+    ('tests/versionerExamples/test_lay.v010.txt', 4, False),
+])
+def test_fs_contains(VerData, path, version, expected):
+    assert (version in VerData(path).fs) == expected
+
