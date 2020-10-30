@@ -8,4 +8,4 @@ Freeway is a module for managing file system structures with recursive pattern r
 from .freeway import Freeway
 from .versioner import Version
 
-__version__ = 'v0.0.7'
+__version__ = 'v0.0.8'
