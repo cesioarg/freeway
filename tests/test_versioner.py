@@ -1,3 +1,4 @@
+import os
 import pytest
 from freeway import Version
 
@@ -5,6 +6,8 @@ from freeway import Version
 @pytest.fixture
 def VerData():
     return Version
+
+root = os.getcwd()
 
 
 @pytest.mark.parametrize('path, expected', [
@@ -81,7 +84,7 @@ def test_previous(VerData, path, expected):
 # Real Filesystem Tests!
 
 @pytest.mark.parametrize('path, expected', [
-    ('tests/versionerExamples/test_mod.v002.txt', 'tests/versionerExamples/test_mod.v001.txt'),
+    ('tests/versionerExamples/test_mod.v002.txt', '%s/test_mod.v001.txt' % root),
     ('tests/versionerExamples/test_mod.v001.txt', None),
     ('tests/versionerExamples/test_mod.v005.txt', None),
     ('tests/versionerExamples/test_mod.v010.txt', None)
@@ -91,8 +94,8 @@ def test_fs_previous(VerData, path, expected):
 
 
 @pytest.mark.parametrize('path, expected', [
-    ('tests/versionerExamples/test_mod.v002.txt', 'tests/versionerExamples/test_mod.v003.txt'),
-    ('tests/versionerExamples/test_mod.v001.txt', 'tests/versionerExamples/test_mod.v002.txt'),
+    ('tests/versionerExamples/test_mod.v002.txt', '%s/test_mod.v003.txt' % root),
+    ('tests/versionerExamples/test_mod.v001.txt', '%s/test_mod.v002.txt' % root),
     ('tests/versionerExamples/test_mod.v005.txt', None),
     ('tests/versionerExamples/test_mod.v010.txt', None)
 ])
@@ -101,20 +104,20 @@ def test_fs_next(VerData, path, expected):
 
 
 @pytest.mark.parametrize('path, expected', [
-    ('tests/versionerExamples/test_mod.v002.txt', 'tests/versionerExamples/test_mod.v001.txt'),
-    ('tests/versionerExamples/test_mod.v001.txt', 'tests/versionerExamples/test_mod.v001.txt'),
-    ('tests/versionerExamples/test_mod.v005.txt', 'tests/versionerExamples/test_mod.v001.txt'),
-    ('tests/versionerExamples/test_mod.v010.txt', 'tests/versionerExamples/test_mod.v001.txt'),
+    ('tests/versionerExamples/test_mod.v002.txt', '%s/test_mod.v001.txt' % root),
+    ('tests/versionerExamples/test_mod.v001.txt', '%s/test_mod.v001.txt' % root),
+    ('tests/versionerExamples/test_mod.v005.txt', '%s/test_mod.v001.txt' % root),
+    ('tests/versionerExamples/test_mod.v010.txt', '%s/test_mod.v001.txt' % root),
 ])
 def test_fs_first(VerData, path, expected):
     assert VerData(path).fs.first == expected
 
 
 @pytest.mark.parametrize('path, expected', [
-    ('tests/versionerExamples/test_mod.v002.txt', 'tests/versionerExamples/test_mod.v004.txt'),
-    ('tests/versionerExamples/test_mod.v001.txt', 'tests/versionerExamples/test_mod.v004.txt'),
-    ('tests/versionerExamples/test_mod.v005.txt', 'tests/versionerExamples/test_mod.v004.txt'),
-    ('tests/versionerExamples/test_mod.v010.txt', 'tests/versionerExamples/test_mod.v004.txt'),
+    ('tests/versionerExamples/test_mod.v002.txt', '%s/test_mod.v004.txt' % root),
+    ('tests/versionerExamples/test_mod.v001.txt', '%s/test_mod.v004.txt' % root),
+    ('tests/versionerExamples/test_mod.v005.txt', '%s/test_mod.v004.txt' % root),
+    ('tests/versionerExamples/test_mod.v010.txt', '%s/test_mod.v004.txt' % root),
 ])
 def test_fs_last(VerData, path, expected):
     assert VerData(path).fs.last == expected
