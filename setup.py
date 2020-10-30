@@ -1,6 +1,7 @@
 import os
 import sys
-from setuptools import setup, find_packages
+from setuptools import setup, find_packages, Extension
+from Cython.Build import cythonize
 
 sys.path.insert(0, os.path.abspath('./src'))
 
@@ -9,6 +10,11 @@ from freeway import __version__
 with open('README.rst', 'r') as desc:
     long_description = desc.read()
     
+extensions = [
+    Extension("freeway", ["src/freeway/freeway.py"]),
+    Extension("versioner", ["src/freeway/versioner.py"]),
+    Extension("errors", ["src/freeway/errors.py"])
+]
 
 setup(
     name="freeway",
@@ -24,6 +30,7 @@ setup(
     author_email="cesio.arg@gmail.com",
     keywords = ['filesystem', 'pipeline', 'parser', 'forder', 'patternvideos'],
     package_dir={'':'src'},
+    ext_modules=cythonize(extensions, build_dir="build"),
     classifiers=[
         "Development Status :: 3 - Alpha",
         "Natural Language :: Spanish",
