@@ -2,14 +2,13 @@
 import os
 import re
 import fnmatch
-from .errors import (NoValidVersion, NoVersionNumber, 
-                     VersionZero, ExceededPaddingVersion)
+from .errors import NoValidVersion, NoVersionNumber, VersionZero, ExceededPaddingVersion
 
-regex_splits = '(?P<head>.*%s)(?P<version>[0-9]+)(?P<tail>[.]%s)'
+regex_splits = "(?P<head>.*%s)(?P<version>[0-9]+)(?P<tail>[.]%s)"
 
 
 class BaseVersion(object):
-    def __init__(self, filename, pads=3, postfix='.v', ext='.*'):
+    def __init__(self, filename, pads=3, postfix=".v", ext=".*"):
         if isinstance(filename, str):
             self.filename = filename
         elif isinstance(filename, Version) or isinstance(filename, VersionFileSystem):
@@ -44,18 +43,19 @@ class BaseVersion(object):
 
     @staticmethod
     def int_to_pad(pads, number):
-        return ('%s%sd' % ('%0', '%d' % pads)) % number
+        return ("%s%sd" % ("%0", "%d" % pads)) % number
 
     def _splits(self, filename):
-        info = [match.groupdict()
-                for match in self.regex_splits.finditer(filename)]
+        info = [match.groupdict() for match in self.regex_splits.finditer(filename)]
         if info:
-            return info[0]['head'], info[0]['version'], info[0]['tail']
+            return info[0]["head"], info[0]["version"], info[0]["tail"]
         else:
             try:
-                return [filename[:filename.rindex('.')],
-                        None,
-                        filename[filename.rindex('.'):]]
+                return [
+                    filename[: filename.rindex(".")],
+                    None,
+                    filename[filename.rindex(".") :],
+                ]
             except ValueError:
                 return [None, None, None]
 
@@ -77,10 +77,9 @@ class BaseVersion(object):
         version = self.int_to_pad(int(self.pads), int(version))
 
         if self.isVersionless:
-            self.filename = '%s%s%s%s' % (self.head, self.postfix,
-                                          version, self.tail)
+            self.filename = "%s%s%s%s" % (self.head, self.postfix, version, self.tail)
         else:
-            self.filename = '%s%s%s' % (self.head, version, self.tail)
+            self.filename = "%s%s%s" % (self.head, version, self.tail)
 
         return self.__class__(self)
 
@@ -91,10 +90,10 @@ class BaseVersion(object):
                 return self.head
             else:
                 if not self.isVersionless:
-                    filename = self.head[:len(self.postfix) * -1]
-                    return Version('%s%s' % (filename, self.tail))
+                    filename = self.head[: len(self.postfix) * -1]
+                    return Version("%s%s" % (filename, self.tail))
                 else:
-                    return Version('%s%s' % (self.head, self.tail))
+                    return Version("%s%s" % (self.head, self.tail))
         except Exception:
             raise NoValidVersion
 
@@ -105,7 +104,7 @@ class Version(BaseVersion):
         if not self.current:
             return None
 
-        if self.current + 1 <= int(self.pads * '9'):
+        if self.current + 1 <= int(self.pads * "9"):
             return self.to(self.current + 1)
         else:
             raise ExceededPaddingVersion
@@ -128,7 +127,7 @@ class Version(BaseVersion):
 
 
 class VersionFileSystem(BaseVersion):
-    def __init__(self, filename, pads=3, postfix='.v', ext='.*'):
+    def __init__(self, filename, pads=3, postfix=".v", ext=".*"):
         if isinstance(filename, str):
             self.filename = filename
         elif isinstance(filename, Version) or isinstance(filename, VersionFileSystem):
@@ -140,20 +139,20 @@ class VersionFileSystem(BaseVersion):
             raise TypeError
 
         if os.path.exists(self.filename) and not os.path.isabs(self.filename):
-            self.filename = '/'.join([os.getcwd(), self.filename])
-        
-        # Python3.x
-        #super().__init__(str(self.filename), pads=pads, postfix=postfix, ext=ext)
-        super(VersionFileSystem, self).__init__(str(self.filename), pads=pads, postfix=postfix, ext=ext)
+            self.filename = "/".join([os.getcwd(), self.filename])
 
+        # Python3.x
+        # super().__init__(str(self.filename), pads=pads, postfix=postfix, ext=ext)
+        super(VersionFileSystem, self).__init__(
+            str(self.filename), pads=pads, postfix=postfix, ext=ext
+        )
 
     def __iter__(self):
         dirname, basename = os.path.split(self.head)
 
         for root, dirnames, filenames in os.walk(dirname):
-            for filename in sorted(fnmatch.filter(filenames, basename + '*')):
-                yield VersionFileSystem('/'.join([root, filename]))
-
+            for filename in sorted(fnmatch.filter(filenames, basename + "*")):
+                yield VersionFileSystem("/".join([root, filename]))
 
     def __contains__(self, version):
         return VersionFileSystem(self).to(version).exists

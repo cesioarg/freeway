@@ -2,9 +2,11 @@ from __future__ import print_function
 from freeway import Freeway
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # Parse data from path
-    filepath = r"C:/example/assets/Characters/Roberto/MOD/Work/example_CH_Roberto_MOD.v001.abc"
+    filepath = (
+        r"C:/example/assets/Characters/Roberto/MOD/Work/example_CH_Roberto_MOD.v001.abc"
+    )
     myPath = Freeway(filepath)
     # Show all parsed data
     print(myPath)
@@ -14,16 +16,18 @@ if __name__ == '__main__':
 
     # Use parsed data for make new paths
     print(myPath.assetDir)
-    
+
     # Make a path from data
-    data = {'assetType': 'Prop',
-            'asset': 'Table',
-            'process': 'MOD',
-            'stage': 'Work',
-            #'assetPrefix': 'PR',
-            'task': 'MOD',
-            'version': '001',
-            'ext': 'abc'}
+    data = {
+        "assetType": "Prop",
+        "asset": "Table",
+        "process": "MOD",
+        "stage": "Work",
+        #'assetPrefix': 'PR',
+        "task": "MOD",
+        "version": "001",
+        "ext": "abc",
+    }
 
     myPath = Freeway(**data)
 
@@ -39,8 +43,6 @@ if __name__ == '__main__':
     print(myPath.assetWorkspacePath)
 
     # Or also
-    other.update({"process": "SHD",
-                  "ext": "mb",
-                  "version": "123"})
+    other.update({"process": "SHD", "ext": "mb", "version": "123"})
 
     print(other.assetWorkspacePath)

@@ -9,6 +9,7 @@ from freeway import __version__
 with open('README.rst', 'r') as desc:
     long_description = desc.read()
 
+
 config = {
     'name': "freeway",
     'version': __version__,
@@ -23,9 +24,6 @@ config = {
     'author_email': "cesio.arg@gmail.com",
     'keywords': ['filesystem', 'pipeline', 'parser', 'folders', 'patterns'],
     'package_dir': {'':'src'},
-    'install_requires': [
-        'cython',
-    ],
     'classifiers': [
         "Development Status :: 3 - Alpha",
         "Natural Language :: Spanish",
@@ -39,7 +37,6 @@ config = {
             "pytest>=3.7",
             ]
     }
-
 }
 
 if not sys.platform.startswith('linux'):
@@ -50,6 +47,8 @@ if not sys.platform.startswith('linux'):
         Extension("freeway.versioner", ["src/freeway/versioner.py"]),
         Extension("freeway.errors", ["src/freeway/errors.py"])
     ]
-    config.update({'ext_modules': cythonize(extensions, build_dir="build")})
+    config.update({'install_requires': ['Cython',],
+                   'ext_modules': cythonize(extensions, build_dir="build")
+                   })
 
 setup(**config)

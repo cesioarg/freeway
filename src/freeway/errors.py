@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # cython: language_level=2, boundscheck=False
 
+
 class NoValidVersion(Exception):
     pass
 
